@@ -1,0 +1,17 @@
+# Set SECRET_KEY, ARCHIVE_URL, and Stripe keys in .env (env_file below loads them).
+services:
+  web:
+    build: .
+    ports:
+      - "${APP_PORT:-4242}:4242"
+    env_file:
+      - .env
+    environment:
+      APP_HOST: "0.0.0.0"
+      APP_PORT: "4242"
+      DB_PATH: /data/payments.db
+    volumes:
+      - talky_data:/data
+
+volumes:
+  talky_data:

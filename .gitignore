@@ -1,0 +1,9 @@
+.env
+private/*.zip
+/talky.zip
+venv/
+.venv/
+payments.db
+__pycache__/
+*.pyc
+client/
