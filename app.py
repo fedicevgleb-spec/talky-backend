@@ -47,10 +47,10 @@ _MPA_ENTRIES = ("thanks88", "payment-failed", "refund", "privacy", "terms")
 
 def _resolved_archive_path() -> Optional[str]:
     """
-    Local zip for paid download. Priority:
+    Local zip or dmg for paid download. Priority:
     1) ARCHIVE_PATH in .env (relative to project root or absolute)
-    2) private/talky.zip
-    3) talky.zip in project root (legacy)
+    2) private/talky.dmg
+    3) talky.dmg in project root (legacy)
     Relative ARCHIVE_PATH must stay under project root.
     """
     raw = (os.getenv("ARCHIVE_PATH") or "").strip()
@@ -67,8 +67,8 @@ def _resolved_archive_path() -> Optional[str]:
                 return None
         candidates.append(p)
     else:
-        candidates.append(os.path.join(_base_dir, "private", "talky.zip"))
-        candidates.append(os.path.join(_base_dir, "talky.zip"))
+        candidates.append(os.path.join(_base_dir, "private", "talky.dmg"))
+        candidates.append(os.path.join(_base_dir, "talky.dmg"))
 
     for path in candidates:
         if path and os.path.isfile(path) and os.access(path, os.R_OK):
