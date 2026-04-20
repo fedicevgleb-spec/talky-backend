@@ -5,7 +5,7 @@ DB_PATH := /data/payments.db
 
 .DEFAULT_GOAL := help
 
-.PHONY: help up up-d down down-v ps logs build rebuild restart start stop sh shell db clean prune
+.PHONY: help up up-d down down-v ps logs build rebuild restart start stop sh shell db clean prune prod
 
 help:
 	@echo "Usage: make [target]"
@@ -26,6 +26,7 @@ help:
 	@echo "  db        sqlite3 CLI on $(DB_PATH) inside $(SERVICE)"
 	@echo "  clean     docker compose down"
 	@echo "  prune     docker system prune -f (unused data)"
+	@echo "  prod      git pull (root + client/), then docker compose up -d --build"
 
 up:
 	$(COMPOSE) up
@@ -73,6 +74,11 @@ clean:
 
 prune:
 	docker system prune -f
+
+prod:
+	git pull
+	git -C client pull
+	$(COMPOSE) up -d --build
 
 env:
 	docker compose exec $(SERVICE) env

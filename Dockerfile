@@ -1,3 +1,11 @@
+FROM node:22-alpine AS client-build
+
+WORKDIR /client
+COPY client/package.json client/package-lock.json ./
+RUN npm ci
+COPY client/ ./
+RUN npm run build
+
 FROM python:3.12-slim
 
 RUN apt-get update \
@@ -11,7 +19,7 @@ RUN pip install --no-cache-dir -r requirements.txt
 
 COPY app.py .
 COPY private ./private
-COPY client ./client
+COPY --from=client-build /client/dist ./client/dist
 
 EXPOSE 4242
 
