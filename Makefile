@@ -2,10 +2,12 @@
 COMPOSE := docker compose
 SERVICE := web
 DB_PATH := /data/payments.db
+# Host directory to fill from the built image (override for nginx root, e.g. /home/talky/client/dist)
+CLIENT_DIST ?= ./client/dist
 
 .DEFAULT_GOAL := help
 
-.PHONY: help up up-d down down-v ps logs build rebuild restart start stop sh shell db clean prune prod
+.PHONY: help up up-d down down-v ps logs build rebuild restart start stop sh shell db clean prune prod sync-dist
 
 help:
 	@echo "Usage: make [target]"
@@ -26,7 +28,8 @@ help:
 	@echo "  db        sqlite3 CLI on $(DB_PATH) inside $(SERVICE)"
 	@echo "  clean     docker compose down"
 	@echo "  prune     docker system prune -f (unused data)"
-	@echo "  prod      git pull (root + client/), then docker compose up -d --build"
+	@echo "  sync-dist copy /app/client/dist from image -> CLIENT_DIST ($(CLIENT_DIST))"
+	@echo "  prod      git pull (root + client/), compose up -d --build, then sync-dist"
 
 up:
 	$(COMPOSE) up
@@ -75,10 +78,18 @@ clean:
 prune:
 	docker system prune -f
 
+sync-dist:
+	@mkdir -p "$(CLIENT_DIST)"
+	$(COMPOSE) run --rm --no-deps \
+		-v "$(CLIENT_DIST):/out" \
+		--entrypoint /bin/sh $(SERVICE) \
+		-c 'rm -rf /out/* && cp -a /app/client/dist/. /out/'
+
 prod:
 	git pull
 	git -C client pull
 	$(COMPOSE) up -d --build
+	$(MAKE) sync-dist
 
 env:
 	docker compose exec $(SERVICE) env

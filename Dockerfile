@@ -1,3 +1,6 @@
+# client-build runs npm run build; /app/client/dist in the image is what Flask uses.
+# If nginx serves files from the host (see nginx.conf root), run `make sync-dist` so
+# host CLIENT_DIST matches the image, or copy /app/client/dist from a container.
 FROM node:22-alpine AS client-build
 
 WORKDIR /client
